@@ -5,6 +5,7 @@ import static java.lang.String.valueOf;
 import android.app.AlertDialog;
 import android.content.Context;
 import android.content.DialogInterface;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -107,8 +108,6 @@ public class LoginFragment extends Fragment {
         btnLogin = binding.btnLogin;
         btnCreateNewAcct = binding.btnCreateAccount;
 
-
-
         btnLogin.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -155,6 +154,13 @@ public class LoginFragment extends Fragment {
                             Gson gson = new Gson();
                             UserCreds userCreds = gson.fromJson(response.body().charStream(), UserCreds.class);
                             Log.d(TAG, "get User Creds: " + userCreds);
+
+                            SharedPreferences sharedPreferences = getActivity().getSharedPreferences(
+                                    getString(R.string.preference_file_key), Context.MODE_PRIVATE);
+                            SharedPreferences.Editor editor = sharedPreferences.edit();
+                            editor.putString(getString(R.string.shared_pref_token_key), String.valueOf(userCreds.token));
+                            Log.d(TAG, "onResponse: shared prefs: " + String.valueOf(userCreds.token));
+                            editor.apply();
 
                             listener.goToPosts(userCreds);
 
